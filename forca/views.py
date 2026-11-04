@@ -46,6 +46,7 @@ def jogo(request):
         'palavra_oculta': ' '.join(palavra_oculta),
         'letras_chutadas': ', '.join(letras_chutadas),
         'tentativas': request.session['tentativas_restantes'],
+        'erros': 6 - request.session['tentativas_restantes'],  # <-- Passa a quantidade de erros para a animação
         'ganhou': ganhou,
         'perdeu': perdeu,
         'palavra_correta': palavra_secreta,

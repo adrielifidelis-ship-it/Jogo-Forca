@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Forca - Django</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d1b2a; color: #ffffff; text-align: center; padding: 40px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d1b2a; color: #ffffff; text-align: center; padding: 20px; }
         .card { background: #1b263b; border-radius: 12px; padding: 30px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        .palavra { font-size: 2.5rem; letter-spacing: 10px; margin: 20px 0; color: #60a5fa; font-weight: bold; }
+        
+        /* Estilos da Forca em SVG */
+        .forca-svg { width: 200px; height: 220px; margin: 0 auto; }
+        .forca-linha { stroke: #e0e1dd; stroke-width: 4; stroke-linecap: round; }
+        .corpo-parte { stroke: #f87171; stroke-width: 4; fill: none; stroke-linecap: round; }
+
+        .palavra { font-size: 2.2rem; letter-spacing: 8px; margin: 20px 0; color: #60a5fa; font-weight: bold; }
         input[type="text"] { font-size: 1.2rem; padding: 10px; width: 50px; text-align: center; text-transform: uppercase; border-radius: 6px; border: 1px solid #415a77; background: #0d1b2a; color: #fff; }
         .btn { padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
         .btn:hover { background: #1d4ed8; }
@@ -17,6 +23,51 @@
 <body>
     <div class="card">
         <h1>🎮 Jogo da Forca</h1>
+
+        <!-- Desenho Dinâmico da Forca e do Boneco -->
+        <svg class="forca-svg" viewBox="0 0 200 220">
+            <!-- Estrutura da Forca -->
+            <line x1="20" y1="200" x2="140" y2="200" class="forca-linha" />
+            <line x1="50" y1="200" x2="50" y2="20" class="forca-linha" />
+            <line x1="50" y1="20" x2="130" y2="20" class="forca-linha" />
+            <line x1="130" y1="20" x2="130" y2="50" class="forca-linha" />
+
+            <!-- Partes do Boneco (Exibidas Conforme os Erros) -->
+            <!-- 1 Erro: Cabeça -->
+            {% if erros >= 1 %}
+                <circle cx="130" cy="70" r="20" class="corpo-parte" />
+            {% endif %}
+
+            <!-- 2 Erros: Tronco -->
+            {% if erros >= 2 %}
+                <line x1="130" y1="90" x2="130" y2="140" class="corpo-parte" />
+            {% endif %}
+
+            <!-- 3 Erros: Braço Esquerdo -->
+            {% if erros >= 3 %}
+                <line x1="130" y1="105" x2="100" y2="125" class="corpo-parte" />
+            {% endif %}
+
+            <!-- 4 Erros: Braço Direito -->
+            {% if erros >= 4 %}
+                <line x1="130" y1="105" x2="160" y2="125" class="corpo-parte" />
+            {% endif %}
+
+            <!-- 5 Erros: Perna Esquerda -->
+            {% if erros >= 5 %}
+                <line x1="130" y1="140" x2="105" y2="180" class="corpo-parte" />
+            {% endif %}
+
+            <!-- 6 Erros: Perna Direita (Enforcado) -->
+            {% if erros >= 6 %}
+                <line x1="130" y1="140" x2="155" y2="180" class="corpo-parte" />
+                <!-- Olhos de X para animação de enforcado -->
+                <line x1="122" y1="65" x2="128" y2="71" class="corpo-parte" style="stroke-width:2;" />
+                <line x1="128" y1="65" x2="122" y2="71" class="corpo-parte" style="stroke-width:2;" />
+                <line x1="132" y1="65" x2="138" y2="71" class="corpo-parte" style="stroke-width:2;" />
+                <line x1="138" y1="65" x2="132" y2="71" class="corpo-parte" style="stroke-width:2;" />
+            {% endif %}
+        </svg>
 
         <div class="palavra">{{ palavra_oculta }}</div>
 
@@ -30,7 +81,7 @@
             <br>
             <a href="{% url 'reiniciar' %}" class="btn">Jogar Novamente</a>
         {% elif perdeu %}
-            <h2 style="color: #f87171;">❌ Fim de Jogo! A palavra era: {{ palavra_correta }}</h2>
+            <h2 style="color: #f87171;">😵 Enforcado! A palavra era: {{ palavra_correta }}</h2>
             <br>
             <a href="{% url 'reiniciar' %}" class="btn">Tentar Novamente</a>
         {% else %}
