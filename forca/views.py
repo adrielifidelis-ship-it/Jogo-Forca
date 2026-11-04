@@ -1,7 +1,6 @@
 import random
 from django.shortcuts import render, redirect
 
-# Lista com 100 palavras sobre tecnologia, programação e termos gerais
 PALAVRAS = [
     'PYTHON', 'DJANGO', 'VERCEL', 'PROGRAMACAO', 'DEVELOPER', 'TECNOLOGIA',
     'ALGORITMO', 'BANCO', 'DADOS', 'SERVIDOR', 'CLIENTE', 'INTERFACE',
@@ -22,7 +21,6 @@ PALAVRAS = [
 ]
 
 def jogo(request):
-    # Inicializa o jogo se ainda não houver palavra guardada na sessão
     if 'palavra' not in request.session:
         request.session['palavra'] = random.choice(PALAVRAS)
         request.session['letras_chutadas'] = []
@@ -31,20 +29,15 @@ def jogo(request):
     palavra_secreta = request.session['palavra']
     letras_chutadas = request.session['letras_chutadas']
 
-    # Processa o envio da letra pelo formulário (POST)
     if request.method == 'POST':
         letra = request.POST.get('letra', '').upper()
         if letra and letra not in letras_chutadas:
             letras_chutadas.append(letra)
             request.session['letras_chutadas'] = letras_chutadas
-            
-            # Se a letra não pertence à palavra, desconta uma tentativa
             if letra not in palavra_secreta:
                 request.session['tentativas_restantes'] -= 1
-                
         return redirect('jogo')
 
-    # Monta a exibição da palavra (ex: P Y _ H O N)
     palavra_oculta = [letra if letra in letras_chutadas else '_' for letra in palavra_secreta]
     ganhou = '_' not in palavra_oculta
     perdeu = request.session['tentativas_restantes'] <= 0
@@ -60,6 +53,5 @@ def jogo(request):
     return render(request, 'forca/jogo.html', context)
 
 def reiniciar(request):
-    # Limpa a sessão para iniciar uma nova partida
     request.session.flush()
     return redirect('jogo')
