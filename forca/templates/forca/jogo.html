@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Forca - Django</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d1b2a; color: #ffffff; text-align: center; padding: 40px; }
+        .card { background: #1b263b; border-radius: 12px; padding: 30px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .palavra { font-size: 2.5rem; letter-spacing: 10px; margin: 20px 0; color: #60a5fa; font-weight: bold; }
+        input[type="text"] { font-size: 1.2rem; padding: 10px; width: 50px; text-align: center; text-transform: uppercase; border-radius: 6px; border: 1px solid #415a77; background: #0d1b2a; color: #fff; }
+        .btn { padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn:hover { background: #1d4ed8; }
+        .status { margin: 15px 0; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🎮 Jogo da Forca</h1>
+
+        <div class="palavra">{{ palavra_oculta }}</div>
+
+        <div class="status">
+            <p>Tentativas restantes: <strong>{{ tentativas }}</strong></p>
+            <p>Letras tentadas: {{ letras_chutadas|default:"Nenhuma" }}</p>
+        </div>
+
+        {% if ganhou %}
+            <h2 style="color: #4ade80;">🎉 Parabéns! Você venceu!</h2>
+            <br>
+            <a href="{% url 'reiniciar' %}" class="btn">Jogar Novamente</a>
+        {% elif perdeu %}
+            <h2 style="color: #f87171;">❌ Fim de Jogo! A palavra era: {{ palavra_correta }}</h2>
+            <br>
+            <a href="{% url 'reiniciar' %}" class="btn">Tentar Novamente</a>
+        {% else %}
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" name="letra" maxlength="1" required autofocus autocomplete="off">
+                <button type="submit" class="btn">Chutar</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
